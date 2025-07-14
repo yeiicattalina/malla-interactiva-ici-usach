@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Malla Interactiva USACH</title>
+<style>
+    :root {
+        --bg: #fdfdfd;
+        --primary: #1565c0;
+        --completed: #4caf50;
+        --locked: #b0bec5;
+        --pending: #ffb300;
+    }
+    body{font-family:Arial, sans-serif;background:var(--bg);margin:0;padding:1rem;}
+    h1{text-align:center;margin-bottom:1rem;}
+    #grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:0.75rem;max-width:1200px;margin:0 auto;}
+    .course{padding:0.5rem;border-radius:0.5rem;border:2px solid var(--primary);text-align:center;cursor:pointer;user-select:none;transition:background .2s,color .2s;}
+    .course.locked{background:var(--locked);color:#555;cursor:not-allowed;}
+    .course.pending{background:var(--pending);color:#000;}
+    .course.completed{background:var(--completed);color:#fff;}
+    footer{margin-top:2rem;text-align:center;font-size:0.9rem;color:#666;}
+</style>
+</head>
+<body>
+<h1>Malla Interactiva (demo)</h1>
+<div id="grid"></div>
+<footer>Hecho con ❤️ - Modifica el arreglo <code>courses</code> en <strong>index.html</strong> para agregar más ramos.</footer>
+
+<script>
+// --- Define tu malla aquí ---
+const courses = [
+    { id:"CALC1", name:"Cálculo I", sem:1, prereq:[] },
+    { id:"FIS1",  name:"Física I",   sem:1, prereq:[] },
+    { id:"CALC2", name:"Cálculo II", sem:2, prereq:["CALC1"] },
+    { id:"FIS2",  name:"Física II",  sem:2, prereq:["FIS1","CALC1"] },
+    { id:"CALC3", name:"Cálculo III",sem:3, prereq:["CALC2"] },
+];
+// --------------------------------
+
+// Carga de progreso guardado
+const saved = JSON.parse(localStorage.getItem("progress_v1")||"{}");
+const grid = document.getElementById("grid");
+
+function isUnlocked(course, status){
+    return course.prereq.every(p=>status[p]==="completed");
+}
+
+function render(){
+    grid.innerHTML="";
+    // Estado de cada ramo
+    const status = {};
+    courses.forEach(c=>{
+        status[c.id] = saved[c.id]==="completed" ? "completed" : "pending";
+    });
+    courses.forEach(c=>{
+        if(!isUnlocked(c,status)&&status[c.id]!="completed") status[c.id]="locked";
+    });
+
+    courses.forEach(c=>{
+        const div=document.createElement("div");
+        div.className=`course ${status[c.id]}`;
+        div.textContent=c.name;
+        div.title=`Semestre ${c.sem}`;
+        if(status[c.id]!="locked"){
+            div.onclick=()=>{
+                saved[c.id] = saved[c.id]==="completed" ? "pending" : "completed";
+                localStorage.setItem("progress_v1",JSON.stringify(saved));
+                render();
+            };
+        }
+        grid.appendChild(div);
+    });
+}
+render();
+</script>
+</body>
+</html>
