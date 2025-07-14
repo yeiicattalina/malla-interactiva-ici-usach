@@ -48,6 +48,27 @@ const courses = [
     { id:"FUNDECO",  name:"Fundamentos de economía",   sem:3, prereq:["CALC1"] },
     { id:"PROGRA", name:"Programación", sem:2, prereq:["FUNDECO"] },
     { id:"MODERNA", name:"Física moderna", sem:2, prereq:["FIS2"] },
+
+    { id:"ING2",  name:"Inglés II",  sem:4, prereq:["ING1"] },
+    { id:"TDI", name:"Taller de diseño",sem:4, prereq:["FUNDECO"] },
+    { id:"ANIS", name:"Análisis estadístico", sem:4, prereq:["CALC2"] },    
+    { id:"METODOS",  name:"Métodos numéricos",   sem:4, prereq:["CALC3", "EDO"] },
+    { id:"INGESIS", name:"Ingeniería de sistemas", sem:4, prereq:["QUIM", "EDO"] },
+    { id:"DISEÑO", name:"Diseño digital", sem:4, prereq:["PROGRA"] },
+
+    { id:"ING3",  name:"Inglés III",  sem:5, prereq:["ING2"] },
+    { id:"ESTADISTICA", name:"Estadística aplicada",sem:5, prereq:["ANIS"] },
+    { id:"OPI", name:"Operaciones y procesos industriales", sem:5, prereq:["QUIM", "MODERNA"] },    
+    { id:"ADMI",  name:"Administración",   sem:5, prereq:["INGESIS"] },
+    { id:"MICRO", name:"Microeconomía", sem:5, prereq:["FUNDECO"] },
+    { id:"TGL", name:"Taller de gestión y liderazgo", sem:5, prereq:["INGESIS"] },
+
+    { id:"ING4",  name:"Inglés IV",  sem:5, prereq:["ING3"] },
+    { id:"MACRO", name:"Macroeconomía",sem:5, prereq:["MICRO"] },
+    { id:"CONTA", name:"Contabilidad y costos", sem:5, prereq:["ADMI"] },    
+    { id:"INV",  name:"Investigación de operaciones",   sem:5, prereq:["ALG2", "CALC3"] },
+    { id:"TEC", name:"Tecnologías para la gestión", sem:5, prereq:["DISEÑO"] },
+    { id:"INNOVI", name:"Introducción a la innovación", sem:5, prereq:["TDI"] },
 ];
 // --------------------------------
 
