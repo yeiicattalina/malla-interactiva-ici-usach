@@ -12,19 +12,48 @@
         --locked: #b0bec5;
         --pending: #ffb300;
     }
-    body{font-family:Arial, sans-serif;background:var(--bg);margin:0;padding:1rem;}
+    body{
+        font-family:Arial, sans-serif;
+        background:var(--bg);
+        margin:0;
+        padding:1rem;
+    }
     h1{text-align:center;margin-bottom:1rem;}
-    #grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:0.75rem;max-width:1200px;margin:0 auto;}
-    .course{padding:0.5rem;border-radius:0.5rem;border:2px solid var(--primary);text-align:center;cursor:pointer;user-select:none;transition:background .2s,color .2s;}
+
+    /* Contenedor general de la malla */
+    #malla{max-width:1200px;margin:0 auto;}
+
+    /* Fila por semestre */
+    .row{
+        display:flex;
+        flex-wrap:wrap;
+        gap:0.75rem;
+        margin-bottom:1.75rem;
+    }
+    .row h2{flex-basis:100%;margin:0 0 0.5rem 0;font-size:1.25rem;color:var(--primary);}    
+
+    /* Tarjeta de curso */
+    .course{
+        padding:0.5rem;
+        border-radius:0.5rem;
+        border:2px solid var(--primary);
+        text-align:center;
+        cursor:pointer;
+        user-select:none;
+        transition:background .2s,color .2s;
+        min-width:120px;
+        flex:1 1 120px;
+    }
     .course.locked{background:var(--locked);color:#555;cursor:not-allowed;}
     .course.pending{background:var(--pending);color:#000;}
     .course.completed{background:var(--completed);color:#fff;}
+
     footer{margin-top:2rem;text-align:center;font-size:0.9rem;color:#666;}
 </style>
 </head>
 <body>
 <h1>Malla Interactiva (demo)</h1>
-<div id="grid"></div>
+<div id="malla"></div>
 <footer>Hecho con ❤️ - Modifica el arreglo <code>courses</code> en <strong>index.html</strong> para agregar más ramos.</footer>
 
 <script>
@@ -35,19 +64,19 @@ const courses = [
     { id:"ALG1", name:"Álgebra I", sem:1, prereq:[] },
     { id:"IDI", name:"Introducción al diseño en ingeniería", sem:1, prereq:[] },
     { id:"III",  name:"Introducción a la ingeniería industrial",   sem:1, prereq:[] },
-   
+
     { id:"CALC2", name:"Cálculo II",sem:2, prereq:["CALC1"] },
     { id:"FIS2",  name:"Física II",  sem:2, prereq:["FIS1"] },
     { id:"ALG2", name:"Álgebra II", sem:2, prereq:["ALG1"] },    
     { id:"FPRO",  name:"Fundamentos de programación",   sem:2, prereq:["IDI"] },
     { id:"QUIM", name:"Química general", sem:2, prereq:[] },
-    
+
     { id:"ING1",  name:"Inglés I",  sem:3, prereq:[] },
     { id:"CALC3", name:"Cálculo III",sem:3, prereq:["CALC2"] },
     { id:"EDO", name:"Ecuaciones diferenciales", sem:3, prereq:["ALG2", "CALC2"] },    
     { id:"FUNDECO",  name:"Fundamentos de economía",   sem:3, prereq:["CALC1"] },
-    { id:"PROGRA", name:"Programación", sem:2, prereq:["FUNDECO"] },
-    { id:"MODERNA", name:"Física moderna", sem:2, prereq:["FIS2"] },
+    { id:"PROGRA", name:"Programación", sem:3, prereq:["FPRO"] },
+    { id:"MODERNA", name:"Física moderna", sem:3, prereq:["FIS2"] },
 
     { id:"ING2",  name:"Inglés II",  sem:4, prereq:["ING1"] },
     { id:"TDI", name:"Taller de diseño",sem:4, prereq:["FUNDECO"] },
@@ -63,49 +92,63 @@ const courses = [
     { id:"MICRO", name:"Microeconomía", sem:5, prereq:["FUNDECO"] },
     { id:"TGL", name:"Taller de gestión y liderazgo", sem:5, prereq:["INGESIS"] },
 
-    { id:"ING4",  name:"Inglés IV",  sem:5, prereq:["ING3"] },
-    { id:"MACRO", name:"Macroeconomía",sem:5, prereq:["MICRO"] },
-    { id:"CONTA", name:"Contabilidad y costos", sem:5, prereq:["ADMI"] },    
-    { id:"INV",  name:"Investigación de operaciones",   sem:5, prereq:["ALG2", "CALC3"] },
-    { id:"TEC", name:"Tecnologías para la gestión", sem:5, prereq:["DISEÑO"] },
-    { id:"INNOVI", name:"Introducción a la innovación", sem:5, prereq:["TDI"] },
+    { id:"ING4",  name:"Inglés IV",  sem:6, prereq:["ING3"] },
+    { id:"MACRO", name:"Macroeconomía",sem:6, prereq:["MICRO"] },
+    { id:"CONTA", name:"Contabilidad y costos", sem:6, prereq:["ADMI"] },    
+    { id:"INV",  name:"Investigación de operaciones",   sem:6, prereq:["ALG2", "CALC3"] },
+    { id:"TEC", name:"Tecnologías para la gestión", sem:6, prereq:["DISEÑO"] },
+    { id:"INNOVI", name:"Introducción a la innovación", sem:6, prereq:["TDI"] },
 ];
 // --------------------------------
 
-// Carga de progreso guardado
-const saved = JSON.parse(localStorage.getItem("progress_v1")||"{}");
-const grid = document.getElementById("grid");
+// Carga/guarda de progreso
+const saved = JSON.parse(localStorage.getItem("progress_v1") || "{}");
+const container = document.getElementById("malla");
 
 function isUnlocked(course, status){
     return course.prereq.every(p=>status[p]==="completed");
 }
 
 function render(){
-    grid.innerHTML="";
-    // Estado de cada ramo
+    container.innerHTML="";
     const status = {};
     courses.forEach(c=>{
-        status[c.id] = saved[c.id]==="completed" ? "completed" : "pending";
+        status[c.id] = saved[c.id] === "completed" ? "completed" : "pending";
     });
     courses.forEach(c=>{
-        if(!isUnlocked(c,status)&&status[c.id]!="completed") status[c.id]="locked";
+        if(!isUnlocked(c,status) && status[c.id] !== "completed") status[c.id] = "locked";
     });
 
-    courses.forEach(c=>{
-        const div=document.createElement("div");
-        div.className=`course ${status[c.id]}`;
-        div.textContent=c.name;
-        div.title=`Semestre ${c.sem}`;
-        if(status[c.id]!="locked"){
-            div.onclick=()=>{
-                saved[c.id] = saved[c.id]==="completed" ? "pending" : "completed";
-                localStorage.setItem("progress_v1",JSON.stringify(saved));
-                render();
-            };
-        }
-        grid.appendChild(div);
+    // Obtener lista de semestres ordenada
+    const semesters = [...new Set(courses.map(c=>c.sem))].sort((a,b)=>a-b);
+
+    semesters.forEach(sem => {
+        const row = document.createElement("div");
+        row.className = "row";
+
+        const title = document.createElement("h2");
+        title.textContent = `Semestre ${sem}`;
+        row.appendChild(title);
+
+        courses.filter(c=>c.sem===sem).forEach(c=>{
+            const div = document.createElement("div");
+            div.className = `course ${status[c.id]}`;
+            div.textContent = c.name;
+            div.title = `ID: ${c.id}`;
+            if(status[c.id] !== "locked"){
+                div.onclick = () => {
+                    saved[c.id] = saved[c.id] === "completed" ? "pending" : "completed";
+                    localStorage.setItem("progress_v1", JSON.stringify(saved));
+                    render();
+                };
+            }
+            row.appendChild(div);
+        });
+
+        container.appendChild(row);
     });
 }
+
 render();
 </script>
 </body>
