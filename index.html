@@ -32,9 +32,22 @@
 const courses = [
     { id:"CALC1", name:"Cálculo I", sem:1, prereq:[] },
     { id:"FIS1",  name:"Física I",   sem:1, prereq:[] },
-    { id:"CALC2", name:"Cálculo II", sem:2, prereq:["CALC1"] },
-    { id:"FIS2",  name:"Física II",  sem:2, prereq:["FIS1","CALC1"] },
+    { id:"ALG1", name:"Álgebra I", sem:1, prereq:[] },
+    { id:"IDI", name:"Introducción al diseño en ingeniería", sem:1, prereq:[] },
+    { id:"III",  name:"Introducción a la ingeniería industrial",   sem:1, prereq:[] },
+   
+    { id:"CALC2", name:"Cálculo II",sem:2, prereq:["CALC1"] },
+    { id:"FIS2",  name:"Física II",  sem:2, prereq:["FIS1"] },
+    { id:"ALG2", name:"Álgebra II", sem:2, prereq:["ALG1"] },    
+    { id:"FPRO",  name:"Fundamentos de programación",   sem:2, prereq:["IDI"] },
+    { id:"QUIM", name:"Química general", sem:2, prereq:[] },
+    
+    { id:"ING1",  name:"Inglés I",  sem:3, prereq:[] },
     { id:"CALC3", name:"Cálculo III",sem:3, prereq:["CALC2"] },
+    { id:"EDO", name:"Ecuaciones diferenciales", sem:3, prereq:["ALG2", "CALC2"] },    
+    { id:"FUNDECO",  name:"Fundamentos de economía",   sem:3, prereq:["CALC1"] },
+    { id:"PROGRA", name:"Programación", sem:2, prereq:["FUNDECO"] },
+    { id:"MODERNA", name:"Física moderna", sem:2, prereq:["FIS2"] },
 ];
 // --------------------------------
 
